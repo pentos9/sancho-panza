@@ -90,14 +90,10 @@ public class RedisCommandDecoder extends ReplayingDecoder<Void> {
     private int readInt(ByteBuf in) {
         int integer = 0;
 
-        List<Character> all = new ArrayList<>();
         char c;
         while ((c = (char) in.readByte()) != '\r') {
             integer = (integer * 10) + (c - '0');
-            all.add((char) c);
         }
-
-        System.out.println("readInt:" + all);
 
         if (in.readByte() != '\n') {
             throw new IllegalArgumentException("Invalid number!");
