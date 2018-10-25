@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RedisCommandDecoder extends ReplayingDecoder<Void> {
@@ -72,9 +73,13 @@ public class RedisCommandDecoder extends ReplayingDecoder<Void> {
             out.add(new RedisCommand(new String(cmds[0]), cmds[1]));
         } else if (cmds.length == 3) {
             out.add(new RedisCommand(new String(cmds[0]), cmds[1], cmds[2]));
-        } /*else {
-            throw new IllegalArgumentException("Unknown command!");
-        }*/
+
+        } else if (cmds.length == 1 && new String(cmds[0]).equalsIgnoreCase("command")) {
+            // when EXECUTE: redis-cli -h "127.0.0.1" -p 6379 at terminal,it sends "COMMAND"
+
+            out.add(new RedisCommand(new String(cmds[0]), null));
+            //throw new IllegalArgumentException("Unknown command!");
+        }
     }
 
     private void doCleanUp() {
@@ -85,10 +90,14 @@ public class RedisCommandDecoder extends ReplayingDecoder<Void> {
     private int readInt(ByteBuf in) {
         int integer = 0;
 
+        List<Character> all = new ArrayList<>();
         char c;
         while ((c = (char) in.readByte()) != '\r') {
             integer = (integer * 10) + (c - '0');
+            all.add((char) c);
         }
+
+        System.out.println("readInt:" + all);
 
         if (in.readByte() != '\n') {
             throw new IllegalArgumentException("Invalid number!");

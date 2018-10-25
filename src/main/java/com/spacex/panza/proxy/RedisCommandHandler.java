@@ -29,6 +29,8 @@ public class RedisCommandHandler extends SimpleChannelInboundHandler<RedisComman
             } else {
                 channelHandlerContext.writeAndFlush(BulkReply.NIL_REPLY);
             }
+        } else if (redisCommand.getName().equalsIgnoreCase("command")) {// redis-cli link
+            channelHandlerContext.writeAndFlush(new SimpleStringReply("OK".getBytes()));
         }
 
         System.out.println("database:" + database);
