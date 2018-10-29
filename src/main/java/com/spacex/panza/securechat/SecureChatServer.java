@@ -30,7 +30,7 @@ public class SecureChatServer {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new SecureChatInitializer(sslContext));
+                    .childHandler(new SecureChatServerInitializer(sslContext));
 
             b.bind(PORT).sync().channel().closeFuture().sync();
         } finally {

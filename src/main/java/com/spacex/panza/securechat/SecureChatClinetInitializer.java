@@ -9,21 +9,21 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.ssl.SslContext;
 
-public class SecureChatInitializer extends ChannelInitializer<SocketChannel> {
+public class SecureChatClinetInitializer extends ChannelInitializer<SocketChannel> {
 
     private SslContext sslContext;
 
-    public SecureChatInitializer(SslContext sslContext) {
+    public SecureChatClinetInitializer(SslContext sslContext) {
         this.sslContext = sslContext;
     }
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline channelPipeline = socketChannel.pipeline();
-        channelPipeline.addLast(sslContext.newHandler(socketChannel.alloc()));
+        channelPipeline.addLast(sslContext.newHandler(socketChannel.alloc(), SecureChatClient.HOST, SecureChatClient.PORT));
         channelPipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         channelPipeline.addLast(new StringDecoder());
         channelPipeline.addLast(new StringEncoder());
-        channelPipeline.addLast(new SecureChatServerHandler());
+        channelPipeline.addLast(new SecureChatClientHandler());
     }
 }
